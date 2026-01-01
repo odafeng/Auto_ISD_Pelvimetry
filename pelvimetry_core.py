@@ -504,8 +504,8 @@ class AutomatedPelvimetry:
             "Triangle_Area_cm2": None,
             "Triangle_Depth_mm": None, # Triangle height
             "Triangle_Shape_Index": None,
-            "Rectum_Area_Triangle_cm2": None,
-            "Rectum_Occupancy_Ratio": None,
+            "Bowel_Area_Triangle_cm2": None,
+            "Bowel_Occupancy_Ratio": None,
             "pPFA_cm2": None,          # Posterior Pelvic Fat Area (formerly Fat_Area_cm2)
             "Fat_Occupancy_Ratio": None,
             "Operating_Space_cm2": None
@@ -566,16 +566,16 @@ class AutomatedPelvimetry:
         pixel_area_cm2 = (sx * sy) / 100.0
         triangle_area_cm2_val = area_mm2 / 100.0
         
-        # Rectum Intersection
+        # bowel Intersection
         if data["colon"] is not None:
-            mask_rectum = data["colon"][:,:,z] > 0
-            rectum_area = np.sum(mask_tri & mask_rectum) * pixel_area_cm2
-            res["Rectum_Area_Triangle_cm2"] = round(rectum_area, 2)
+            mask_bowel = data["colon"][:,:,z] > 0
+            bowel_area = np.sum(mask_tri & mask_bowel) * pixel_area_cm2
+            res["Bowel_Area_Triangle_cm2"] = round(bowel_area, 2)
             
             if triangle_area_cm2_val > 0:
-                res["Rectum_Occupancy_Ratio"] = round(rectum_area / triangle_area_cm2_val, 3)
+                res["Bowel_Occupancy_Ratio"] = round(bowel_area / triangle_area_cm2_val, 3)
         else:
-            res["Rectum_Area_Triangle_cm2"] = 0.0
+            res["Bowel_Area_Triangle_cm2"] = 0.0
             
         # Fat Intersection (IPFA subset) -> pPFA
         if data["torso_fat"] is not None:
@@ -590,7 +590,7 @@ class AutomatedPelvimetry:
             
         # Operating Space
         res["Operating_Space_cm2"] = round(
-            max(0, res["Triangle_Area_cm2"] - res["Rectum_Area_Triangle_cm2"] - res["pPFA_cm2"]), 2
+            max(0, res["Triangle_Area_cm2"] - res["Bowel_Area_Triangle_cm2"] - res["pPFA_cm2"]), 2
         )
         
         return res
