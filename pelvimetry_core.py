@@ -4,8 +4,7 @@ Automated Pelvimetry and Body Composition Analysis Core Module
 This module contains the core algorithms for the automated extraction of:
 1. Inter-spinous Distance (ISD)
 2. Anteroposterior Diameter (APD)
-3. Posterior Pelvic Compartment Metrics (Triangle Area, Depth, Operating Space)
-4. Inner Pelvic Fat Area (IPFA)
+3. Posterior Pelvic Compartment Metrics (Triangle Area, Depth, Working Space)
 
 The algorithms are designed to be robust against variations in patient positioning
 and segmentation quality.
@@ -508,7 +507,7 @@ class AutomatedPelvimetry:
             "Bowel_Occupancy_Ratio": None,
             "pPFA_cm2": None,          # Posterior Pelvic Fat Area (formerly Fat_Area_cm2)
             "Fat_Occupancy_Ratio": None,
-            "Operating_Space_cm2": None
+            "Working_Space_cm2": None
         }
         
         if not isd_res["Status"].startswith("Success"):
@@ -577,7 +576,7 @@ class AutomatedPelvimetry:
         else:
             res["Bowel_Area_Triangle_cm2"] = 0.0
             
-        # Fat Intersection (IPFA subset) -> pPFA
+        # Fat Intersection -> pPFA
         if data["torso_fat"] is not None:
             mask_fat = data["torso_fat"][:,:,z] > 0
             fat_area = np.sum(mask_tri & mask_fat) * pixel_area_cm2
@@ -588,92 +587,12 @@ class AutomatedPelvimetry:
         else:
             res["pPFA_cm2"] = 0.0
             
-        # Operating Space
-        res["Operating_Space_cm2"] = round(
+        # Working Space
+        res["Working_Space_cm2"] = round(
             max(0, res["Triangle_Area_cm2"] - res["Bowel_Area_Triangle_cm2"] - res["pPFA_cm2"]), 2
         )
         
         return res
-
-    def calculate_ipfa(self, data, isd_res, ct_filepath, spacing):
-        """
-        Calculates the Inner Pelvic Fat Area (IPFA) at the ISD level.
-        
-        Algorithm:
-        1. Boundary Definition: Identify the left and right hip bones on the image.
-        2. Cavity Filling: Use a scanline filling algorithm to create a mask of the 
-           entire pelvic cavity between the hip bones.
-        3. Tissue Selection: Intersect the cavity mask with pixels in the fat 
-           radiodensity range (-190 to -30 HU).
-        
-        Note: Requires loading the original CT image for HU values.
-        """
-        if not isd_res["Status"].startswith("Success"):
-            return None, "Failed_No_ISD"
-
-        z = isd_res["ISD_slice"]
-        sx, sy, sz = spacing
-        
-        # Load CT slice for HU values
-        try:
-            ct_img = nib.load(ct_filepath)
-            ct_img = nib.as_closest_canonical(ct_img)
-            ct_slice = ct_img.get_fdata()[:, :, z]
-        except Exception as e:
-            return None, f"Failed_CT_Load: {e}"
-
-        # Get Hip Masks
-        mask_L = data["hip_L"][:, :, z] > 0
-        mask_R = data["hip_R"][:, :, z] > 0
-        
-        pts_L = np.argwhere(mask_L)
-        pts_R = np.argwhere(mask_R)
-        
-        if len(pts_L) == 0 or len(pts_R) == 0:
-            return None, "Failed_Hip_Missing"
-            
-        # Distinguish Left/Right on Image X-axis
-        # Ensure we scan from one hip to the other
-        mean_x_L = np.mean(pts_L[:, 0])
-        mean_x_R = np.mean(pts_R[:, 0])
-        
-        if mean_x_L < mean_x_R:
-            pts_low = pts_L; pts_high = pts_R
-        else:
-            pts_low = pts_R; pts_high = pts_L
-            
-        # Scanline Fill
-        # Iterate through Y (Posterior-Anterior)
-        # Find X bounds at each Y level
-        y_min = max(pts_low[:, 1].min(), pts_high[:, 1].min())
-        y_max = min(pts_low[:, 1].max(), pts_high[:, 1].max())
-        
-        if y_max <= y_min:
-            return None, "Failed_No_Overlap"
-            
-        cavity_mask = np.zeros_like(ct_slice, dtype=bool)
-        
-        for y in range(int(y_min), int(y_max) + 1):
-            # Find inner borders
-            row_low = pts_low[pts_low[:, 1] == y]
-            row_high = pts_high[pts_high[:, 1] == y]
-            
-            if len(row_low) > 0 and len(row_high) > 0:
-                # Fill between rightmost point of left bone and leftmost point of right bone
-                x_start = np.max(row_low[:, 0])
-                x_end = np.min(row_high[:, 0])
-                
-                if x_end > x_start:
-                    cavity_mask[int(x_start)+1 : int(x_end), y] = True
-                    
-        # Apply HU Threshold for Fat
-        fat_hu_mask = (ct_slice >= -190) & (ct_slice <= -30)
-        final_mask = cavity_mask & fat_hu_mask
-        
-        pixel_area_cm2 = (sx * sy) / 100.0
-        ipfa_cm2 = np.sum(final_mask) * pixel_area_cm2
-        
-        return round(ipfa_cm2, 2), "Success"
 
     def pipeline_single_case(self, nifti_path, seg_output_dir):
         """
@@ -702,11 +621,6 @@ class AutomatedPelvimetry:
         # 5. Triangle Metrics
         tri_res = self.calculate_triangle_metrics(data, isd_res, spacing)
         results.update(tri_res)
-        
-        # 6. IPFA
-        ipfa_val, ipfa_status = self.calculate_ipfa(data, isd_res, nifti_path, spacing)
-        results["IPFA_cm2"] = ipfa_val
-        results["IPFA_Status"] = ipfa_status
         
         # Flatten Coordinates for Easy Reporting
         if "pt_L" in isd_res and isd_res["pt_L"] is not None:

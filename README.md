@@ -7,8 +7,7 @@ This repository contains the source code for the automated pelvimetry pipeline d
 The pipeline automates the extraction of key anatomical metrics from CT scans:
 1.  **Inter-spinous Distance (ISD)**: Minimum distance between ischial spines using valley detection or plateau fallback.
 2.  **Mid-pelvic Anteroposterior Diameter (mAPD)**: Distance between the pubic symphysis and sacral promontory equivalent.
-3.  **Pelvic Triangle Metrics**: Area, Depth, Shape Index, **pPFA** (Posterior Pelvic Fat Area), and Occupancy Ratios.
-4.  **Inner Pelvic Fat Area (IPFA)**: Visceral fat quantification at the ISD level.
+3.  **Pelvic Triangle Metrics**: Area, Depth, Shape Index, **pPFA** (Posterior Pelvic Fat Area), **Working Space**, and Occupancy Ratios.
 
 ## Prerequisites
 
@@ -49,7 +48,7 @@ You can use this data to verify the code immediately.
 The provided code performs two distinct tasks:
 
 #### A. Metric Calculation (`Pelvimetry_Demo.ipynb`)
-Calculates all anatomical metrics (ISD, APD, Triangle Area, pPFA, IPFA, etc.) and outputs them numerically.
+Calculates all anatomical metrics (ISD, APD, Triangle Area, pPFA, Working Space, etc.) and outputs them numerically.
 *   **Input**: NIfTI file + Segmentation Masks folder.
 *   **Output**: Printed metrics and coordinate points.
 
