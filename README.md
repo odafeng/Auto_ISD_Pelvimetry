@@ -1,13 +1,18 @@
-# Automated Pelvimetry and Body Composition Analysis
+# Auto-ISD: Automated CT-Based Pelvimetry Pipeline
 
-This repository contains the source code for the automated pelvimetry pipeline described in the manuscript.
+[![DOI](https://img.shields.io/badge/DOI-10.1007%2Fs11548--026--03606--2-blue)](https://doi.org/10.1007/s11548-026-03606-2)
+[![Demo](https://img.shields.io/badge/Live_Demo-auto--isd--demo.vercel.app-teal)](https://auto-isd-demo.vercel.app/)
+
+Source code for the automated pelvimetry pipeline described in:
+
+> Huang S-F, Tseng H-P, Hsu C-W. **A fully automated CT-based pelvimetry pipeline for quantifying mid-pelvic surgical workspace in rectal cancer.** *Int J Comput Assist Radiol Surg.* 2026. [DOI: 10.1007/s11548-026-03606-2](https://doi.org/10.1007/s11548-026-03606-2)
 
 ## Overview
 
-The pipeline automates the extraction of key anatomical metrics from CT scans:
-1.  **Inter-spinous Distance (ISD)**: Minimum distance between ischial spines using valley detection or plateau fallback.
-2.  **Mid-pelvic Anteroposterior Diameter (mAPD)**: Distance between the pubic symphysis and sacral promontory equivalent.
-3.  **Pelvic Triangle Metrics**: Area, Depth, Shape Index, **pPFA** (Posterior Pelvic Fat Area), **Working Space**, and Occupancy Ratios.
+The pipeline automates the extraction of key anatomical metrics from routine staging CT scans:
+1.  **Interspinous Distance (ISD)**: The narrowest transverse distance at the ischial spine level, identified via valley detection or plateau fallback.
+2.  **Posterior Pelvic Triangle**: Area, depth, and shape index — a geometric representation of the mid-pelvic surgical workspace.
+3.  **Soft Tissue Occupancy**: Bowel area, posterior pelvic fat area (pPFA), occupancy ratios, and residual working space.
 
 ## Prerequisites
 
@@ -34,7 +39,30 @@ The pipeline automates the extraction of key anatomical metrics from CT scans:
 pip install -r requirements.txt
 ```
 
-3.  Ensure `TotalSegmentator` is installed if you need to generate masks from scratch.
+3.  Ensure `TotalSegmentator` is installed if you need to generate masks from scratch:
+
+```bash
+pip install TotalSegmentator
+```
+
+### TotalSegmentator License
+
+Bone-based metrics (ISD, triangle geometry) work with the **free version** of TotalSegmentator — no license needed.
+
+For **soft tissue metrics** (pPFA, working space), the `tissue_types` task requires an academic license:
+
+```bash
+# 1. Apply for an academic license at:
+#    https://github.com/wasserth/TotalSegmentator#license
+
+# 2. Set the license as an environment variable:
+export TOTALSEG_LICENSE='your_license_key_here'
+
+# 3. Register the license:
+totalseg_set_license -l $TOTALSEG_LICENSE
+```
+
+> **Note:** If you only need bone-derived pelvimetry (ISD, triangle area/depth), you can skip the license step entirely. The pipeline will still compute all bone-based metrics successfully.
 
 ## Usage
 
@@ -76,5 +104,20 @@ results = pipeline.pipeline_single_case(
 print(f"ISD: {results['ISD_mm']} mm")
 ```
 
+## Citation
+
+If you use this code in your research, please cite:
+
+```bibtex
+@article{huang2026autoiSD,
+  title={A fully automated CT-based pelvimetry pipeline for quantifying mid-pelvic surgical workspace in rectal cancer},
+  author={Huang, Shih-Feng and Tseng, Hsin-Ping and Hsu, Chao-Wen},
+  journal={International Journal of Computer Assisted Radiology and Surgery},
+  year={2026},
+  doi={10.1007/s11548-026-03606-2}
+}
+```
+
 ## License
-[MIT License / Academic Use Only]
+
+MIT License — Academic use encouraged. See [LICENSE](LICENSE) for details.
