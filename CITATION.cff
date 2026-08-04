@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this pipeline in your research, please cite the preferred article below."
+title: "Auto-ISD: Automated CT-Based Pelvimetry Pipeline"
+type: software
+authors:
+  - family-names: Huang
+    given-names: Shih-Feng
+    orcid: "https://orcid.org/0000-0002-8037-4074"
+  - family-names: Tseng
+    given-names: Hsin-Ping
+  - family-names: Hsu
+    given-names: Chao-Wen
+repository-code: "https://github.com/odafeng/auto-isd-pelvimetry"
+url: "https://auto-isd-demo.vercel.app/"
+license: MIT
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Huang
+      given-names: Shih-Feng
+    - family-names: Tseng
+      given-names: Hsin-Ping
+    - family-names: Hsu
+      given-names: Chao-Wen
+  title: "A fully automated CT-based pelvimetry pipeline for quantifying mid-pelvic surgical workspace in rectal cancer"
+  journal: "International Journal of Computer Assisted Radiology and Surgery"
+  year: 2026
+  doi: "10.1007/s11548-026-03606-2"

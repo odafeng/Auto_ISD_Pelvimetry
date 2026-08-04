@@ -2,10 +2,22 @@
 
 [![DOI](https://img.shields.io/badge/DOI-10.1007%2Fs11548--026--03606--2-blue)](https://doi.org/10.1007/s11548-026-03606-2)
 [![Demo](https://img.shields.io/badge/Live_Demo-auto--isd--demo.vercel.app-teal)](https://auto-isd-demo.vercel.app/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+<p align="center">
+  <img src=".github/social-preview.png" alt="Auto-ISD — automated CT-based mid-pelvic workspace quantification" width="100%" />
+</p>
 
 Source code for the automated pelvimetry pipeline described in:
 
 > Huang S-F, Tseng H-P, Hsu C-W. **A fully automated CT-based pelvimetry pipeline for quantifying mid-pelvic surgical workspace in rectal cancer.** *Int J Comput Assist Radiol Surg.* 2026. [DOI: 10.1007/s11548-026-03606-2](https://doi.org/10.1007/s11548-026-03606-2)
+
+| Research artifact | Evidence |
+| --- | --- |
+| **Publication** | Peer-reviewed article in *IJCARS* |
+| **Reproduction** | Core Python implementation, demo CT, segmentation masks, and QC notebook |
+| **Interactive explanation** | [Live scrollytelling demo](https://auto-isd-demo.vercel.app/) |
+| **Reusable package** | Maintained separately as [`ctpelvimetry`](https://github.com/odafeng/ctpelvimetry) |
 
 ## Overview
 
@@ -28,7 +40,7 @@ The pipeline automates the extraction of key anatomical metrics from routine sta
         *   `torso_fat.nii.gz` (for body composition)
 
     > **Citation for TotalSegmentator**:
-    > Wasserthal, J., Breit, H. C., Meyer, M. T., Pradella, M., Hinck, D., Sauter, A. W., Heye, T., Boll, D. T., Cyriac, J., Yang, S., Bach, M., & Segeroth, M. (2023). TotalSegmentator: Robust Segmentation of 104 Anatomic Structures in CT Images. Radiology. Artificial intelligence, 5(5), e230024. [https://doi.org/10.1148/ryai.230024]
+    > Wasserthal, J., Breit, H. C., Meyer, M. T., Pradella, M., Hinck, D., Sauter, A. W., Heye, T., Boll, D. T., Cyriac, J., Yang, S., Bach, M., & Segeroth, M. (2023). TotalSegmentator: Robust Segmentation of 104 Anatomic Structures in CT Images. Radiology. Artificial intelligence, 5(5), e230024. [DOI](https://doi.org/10.1148/ryai.230024)
 
 ## Installation
 
@@ -72,7 +84,7 @@ A `Demo` folder is included in this package containing a sample patient:
 *   `Demo/*.nii.gz`: Pre-computed segmentation masks.
 You can use this data to verify the code immediately.
 
-### 2. running the Code
+### 2. Running the Code
 The provided code performs two distinct tasks:
 
 #### A. Metric Calculation (`Pelvimetry_Demo.ipynb`)
@@ -121,3 +133,5 @@ If you use this code in your research, please cite:
 ## License
 
 MIT License — Academic use encouraged. See [LICENSE](LICENSE) for details.
+
+Machine-readable citation metadata are available in [`CITATION.cff`](CITATION.cff).
